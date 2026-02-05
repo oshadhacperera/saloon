@@ -1,5 +1,5 @@
 export default async function Home() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/status`, {
+    const res = await fetch("/api/status", {
         cache: "no-store"
     });
 
