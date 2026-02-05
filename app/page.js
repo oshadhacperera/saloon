@@ -1,9 +1,9 @@
-export default async function Home() {
-    const res = await fetch("/api/status", {
-        cache: "no-store"
-    });
+import { kv } from "@vercel/kv";
 
-    const { open } = await res.json();
+export const runtime = "nodejs";
+
+export default async function Home() {
+    const open = await kv.get("saloonOpen");
 
     return (
         <main>
