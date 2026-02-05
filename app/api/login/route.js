@@ -1,12 +1,18 @@
-const ADMIN_USERNAME = "rksaloon";
-const ADMIN_PASSWORD = "ravi1234";
+export const runtime = "nodejs";
 
 export async function POST(req) {
     const { username, password } = await req.json();
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // CHANGE THESE
+    if (username === "rksaloon" && password === "ravi1234") {
+        return new Response(
+            JSON.stringify({ success: true }),
+            { status: 200 }
+        );
     }
 
-    return new Response(JSON.stringify({ success: false }), { status: 401 });
+    return new Response(
+        JSON.stringify({ error: "Invalid credentials" }),
+        { status: 401 }
+    );
 }

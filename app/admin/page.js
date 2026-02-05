@@ -14,37 +14,45 @@ export default function AdminPage() {
         const username = e.target.username.value;
         const password = e.target.password.value;
 
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
 
-        if (res.ok) {
+            if (!res.ok) throw new Error();
+
             setLoggedIn(true);
             setError("");
-        } else {
+        } catch {
             setError("Invalid username or password");
         }
     }
 
     async function updateStatus(open) {
-        await fetch("/api/status", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ open })
-        });
+        try {
+            const res = await fetch("/api/status", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ open })
+            });
 
-        alert(`Saloon is now ${open ? "OPEN" : "CLOSED"}`);
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed");
+            }
+
+            alert(`Saloon is now ${open ? "OPEN" : "CLOSED"}`);
+        } catch (err) {
+            alert("Error updating status");
+            console.error(err);
+        }
     }
 
     return (
         <div className="container">
-            {/* Back to Home Button */}
-            <button
-                className="back-btn"
-                onClick={() => router.push("/")}
-            >
+            <button onClick={() => router.push("/")}>
                 ← Back to Home
             </button>
 
@@ -52,7 +60,7 @@ export default function AdminPage() {
                 <>
                     <h1>Admin Login</h1>
 
-                    <form className="card" onSubmit={handleLogin}>
+                    <form onSubmit={handleLogin}>
                         <input name="username" placeholder="Username" required />
                         <input
                             name="password"
@@ -60,29 +68,21 @@ export default function AdminPage() {
                             placeholder="Password"
                             required
                         />
-                        <button type="submit" style={{ backgroundColor: "blueviolet" }}>Login</button>
-                        {error && <p className="error">{error}</p>}
+                        <button type="submit">Login</button>
+                        {error && <p style={{ color: "red" }}>{error}</p>}
                     </form>
                 </>
             ) : (
                 <>
                     <h1>Admin Control Panel</h1>
 
-                    <div className="card">
-                        <button
-                            className="open-btn"
-                            onClick={() => updateStatus(true)}
-                        >
-                            Open Saloon
-                        </button>
+                    <button onClick={() => updateStatus(true)}>
+                        Open Saloon
+                    </button>
 
-                        <button
-                            className="close-btn"
-                            onClick={() => updateStatus(false)}
-                        >
-                            Close Saloon
-                        </button>
-                    </div>
+                    <button onClick={() => updateStatus(false)}>
+                        Close Saloon
+                    </button>
                 </>
             )}
         </div>
